@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1023973905794",
+    "project_id": "olx-clone-2c457",
+    "storage_bucket": "olx-clone-2c457.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1023973905794:android:12a9ead98b8c0bbc5cab9b",
+        "android_client_info": {
+          "package_name": "com.example.tabeeby_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVezfn8cgTN8AMqqUuDJJ2HAml7KAYQ_o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1023973905794:android:904bf4700496613a5cab9b",
+        "android_client_info": {
+          "package_name": "com.example.untitled1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVezfn8cgTN8AMqqUuDJJ2HAml7KAYQ_o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
