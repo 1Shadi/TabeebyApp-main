@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 
-circularProgress()
-{
+Widget circularProgress() {
   return Container(
     alignment: Alignment.centerRight,
     padding: const EdgeInsets.only(top: 12.0),
-    child: const CircularProgressIndicator(
-      valueColor: AlwaysStoppedAnimation(Colors.lightGreenAccent),
+    child: CircularProgressIndicator(
+      valueColor: AlwaysStoppedAnimation<Color>(Colors.lightGreenAccent),
     ),
   );
 }

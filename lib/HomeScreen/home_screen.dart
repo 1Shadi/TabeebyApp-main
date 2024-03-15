@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:tabeeby_app/ProfileScreen/profile_screen.dart';
 import 'package:tabeeby_app/SearchProduct/search_product.dart';
@@ -29,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
             userImageUrl = results.data()!['userImage'];
             getUserName = results.data()!['userName'];
           });
-        }
+        });
   }
 
   getUserAddress() async

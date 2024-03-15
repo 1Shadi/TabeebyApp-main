@@ -1,6 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:tabeeby_app/DialogBox/loading_dialog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tabeeby_app/DialogBox/loading_dialog.dart'; // Check this path
 import 'package:tabeeby_app/ForgetPassword/forget_password.dart';
 import 'package:tabeeby_app/HomeScreen/home_screen.dart';
 import 'package:tabeeby_app/LoginScreen/background.dart';
@@ -9,7 +9,7 @@ import 'package:tabeeby_app/Widgets/rounded_button.dart';
 import 'package:tabeeby_app/Widgets/rounded_input_field.dart';
 import 'package:tabeeby_app/Widgets/rounded_password_field.dart';
 
-import '../DialogBox/error_dialog.dart';
+import '../DialogBox/error_dialog.dart'; // Check this path
 import '../SignupScreen/signup_screen.dart';
 
 class LoginBody extends StatefulWidget {
@@ -22,44 +22,35 @@ class _LoginBodyState extends State<LoginBody> {
   final TextEditingController _passwordController = TextEditingController();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  void _login() async
-  {
+  void _login() async {
     showDialog(
-      context: context,
-      builder: (_)
-      {
-        return LoadingAlertDialog(message: 'Please wait..',);
-
-      }
-    );
-
+        context: context,
+        builder: (_) {
+          return LoadingAlertDialog(message: 'Please wait..');
+        });
     User? currentUser;
-
-    await _auth.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-    ).then((auth)
-    {
+    await _auth
+        .signInWithEmailAndPassword(
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
+    )
+        .then((auth) {
       currentUser = auth.user;
-    }).catchError((error)
-    {
+    }).catchError((error) {
       Navigator.pop(context);
-      showAboutDialog(context: context, builder: (context)
-    {
-      return ErrorAlertDialog(message: error.message.toString());
-     });
+      showDialog(
+          context: context,
+          builder: (context) {
+            return ErrorAlertDialog(message: error.message.toString());
+          });
     });
-
-    if(currentUser != null)
-      {
-        Navigator.pop(context);
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) =>HomeScreen()));
-      }
-    else
-      {
-        print('error');
-      }
+    if (currentUser != null) {
+      Navigator.pop(context);
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => HomeScreen()));
+    } else {
+      print('error');
+    }
   }
 
   @override
@@ -111,21 +102,23 @@ class _LoginBodyState extends State<LoginBody> {
             ),
             RoundedButton(
               text: 'LOGIN',
-              press: ()
-              {
-                _emailController.text.isNotEmpty && _passwordController.text.isNotEmpty
+              press: () {
+                _emailController.text.isNotEmpty &&
+                    _passwordController.text.isNotEmpty
                     ? _login()
                     : showDialog(
-                  context: context,
-                  builder: (context)
-                    {
-                      return const ErrorAlertDialog(message: 'Please write your email and password for login');
-                    }
-                );
+                    context: context,
+                    builder: (context) {
+                      return const ErrorAlertDialog(
+                          message:
+                          'Please write your email and password for login');
+                    });
                 // Add your login logic here
               },
             ),
-            SizedBox(height: size.height * 0.03,),
+            SizedBox(
+              height: size.height * 0.03,
+            ),
             AlreadyHaveAnAccountCheck(
               login: true,
               press: () {

@@ -1,13 +1,12 @@
+import 'dart:io'; // Import dart:io instead of dart:html
 
-
-import 'dart:html';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as Path;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tabeeby_app/DialogBox/loading_dialog.dart';
 import 'package:tabeeby_app/Widgets/global_var.dart';
 import 'package:uuid/uuid.dart';
@@ -18,87 +17,67 @@ class UploadAdScreen extends StatefulWidget {
 }
 
 class _UploadAdScreenState extends State<UploadAdScreen> {
-
   String postId = const Uuid().v4();
-
   bool uploading = false, next = false;
-
-  // final List<File> _image = [];
-
-   File? _imageFile;
+  final List<File> _image = [];
   List<String> urlslist = [];
-
   FirebaseAuth _auth = FirebaseAuth.instance;
-
   String name = '';
   String phoneNo = '';
-
   double val = 0;
-
   CollectionReference? imgRef;
-
   String itemPrice = '';
-  String itemModel= '';
+  String itemModel = '';
   String itemWeight = '';
   String description = '';
-
-
-
 
   Future<void> chooseImage(ImageSource source) async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: source);
     if (pickedFile != null) {
       setState(() {
-        _imageFile = File(pickedFile.path); // Update _imageFile
+        _image.add(File(pickedFile.path)); // Add picked image to _image list
       });
     }
   }
 
-  Future uploadFile() async
-  {
+  Future<void> uploadFile() async {
     int i = 1;
-    for(var img in _image)
-      {
-        setState(() {
-          val = i / _image.length;
+    for (var img in _image) {
+      setState(() {
+        val = i / _image.length;
+      });
+      var ref = FirebaseStorage.instance.ref().child('image/${Path.basename(img.path)}');
+
+      await ref.putFile(img).whenComplete(() async {
+        await ref.getDownloadURL().then((value) {
+          urlslist.add(value);
+          i++;
         });
-        var ref = FirebaseStorage.instance.ref().child('image/${Path.basename(img.path)}');
-
-        await ref.putFile(img).whenComplete(() async {
-          await ref.getDownloadURL().then((value) {
-            urlslist.add(value);
-            i++;
-          });
-        });
-
-      }
-
+      });
+    }
   }
 
-  getNameOfUser()
-  {
+  getNameOfUser() {
     FirebaseFirestore.instance.collection('users')
         .doc(uid)
         .get()
         .then((snapshot) async{
-          if(snapshot.exists)
-            {
-              setState(() {
-                name = snapshot.data()!['userName'];
-                phoneNo = snapshot.data()!['userNumber'];
-              });
-            }
+      if(snapshot.exists)
+      {
+        setState(() {
+          name = snapshot.data()!['userName'];
+          phoneNo = snapshot.data()!['userNumber'];
+        });
+      }
     });
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     //getNameOfUser();
-   imgRef = FirebaseFirestore.instance.collection('imageUrls');
-
+    imgRef = FirebaseFirestore.instance.collection('imageUrls');
   }
 
   @override
@@ -128,9 +107,7 @@ class _UploadAdScreenState extends State<UploadAdScreen> {
             ),
           ),
           title: Text(
-            next
-                ? "Please write products info"
-                : "Choose product's image",
+            next ? "Please write products info" : "Choose product's image",
             style: const TextStyle(
               color: Colors.black54,
               fontFamily: 'Signatra',
@@ -141,130 +118,130 @@ class _UploadAdScreenState extends State<UploadAdScreen> {
             next
                 ? Container()
                 : ElevatedButton(
-              onPressed: ()
-              {
-                if(_image.length == 5)
-                {
+              onPressed: () {
+                if (_image.length == 5) {
                   setState(() {
                     uploading = true;
                     next = true;
                   });
-                }
-
-                else
-                {
+                } else {
                   Fluttertoast.showToast(
                     msg: 'Please select 5 images only.',
                     gravity: ToastGravity.CENTER,
-
                   );
-
                 }
-
-                // Add the functionality for the Next button here
               },
               child: const Text(
                 'Next',
                 style: TextStyle(
-                    fontSize: 19,
-                    color: Colors.black54,
-                    fontFamily: 'Varela'),
+                  fontSize: 19,
+                  color: Colors.black54,
+                  fontFamily: 'Varela',
+                ),
               ),
             ),
           ],
         ),
         body: next
-            ? const SingleChildScrollView(
+            ? SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.all(30),
+            padding: const EdgeInsets.all(30),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SizedBox(height: 5.0,),
+                SizedBox(height: 5.0),
                 TextField(
-                  decoration: InputDecoration(hintText: 'Enter Product Price'),
-                  onChanged: (value)
-                  {
-                    itemPrice = value;
-
-
+                  decoration: InputDecoration(
+                    hintText: 'Enter Product Price',
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      itemPrice = value;
+                    });
                   },
                 ),
-                SizedBox(height: 5.0,),
+                SizedBox(height: 5.0),
                 TextField(
-                  decoration: InputDecoration(hintText: 'Enter Product Name'),
-                  onChanged: (value)
-                  {
-                    itemModel = value;
-
-
+                  decoration: InputDecoration(
+                    hintText: 'Enter Product Name',
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      itemModel = value;
+                    });
                   },
                 ),
-                SizedBox(height: 5.0,),
+                SizedBox(height: 5.0),
                 TextField(
-                  decoration: InputDecoration(hintText: 'Enter Product Weight'),
-                  onChanged: (value)
-                  {
-                    itemWeight = value;
-
-
+                  decoration: InputDecoration(
+                    hintText: 'Enter Product Weight',
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      itemWeight = value;
+                    });
                   },
                 ),
-                SizedBox(height: 5.0,),
+                SizedBox(height: 5.0),
                 TextField(
-                  decoration: InputDecoration(hintText: 'Write a description'),
-                  onChanged: (value)
-                  {
-                    description = value;
-
+                  decoration: InputDecoration(
+                    hintText: 'Write a description',
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      description = value;
+                    });
                   },
                 ),
-                SizedBox(height: 15.0,),
+                SizedBox(height: 15.0),
                 Container(
                   width: MediaQuery.of(context).size.width * 0.5,
                   child: ElevatedButton(
-                      onPressed: ()
-                      {
-                        showDialog(context: context, builder: (context)
-                        {
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
                           return LoadingAlertDialog(
-                              message: 'Uploading...',
+                            message: 'Uploading...',
                           );
+                        },
+                      );
+                      uploadFile().whenComplete(() {
+                        FirebaseFirestore.instance
+                            .collection('products')
+                            .doc(postId)
+                            .set({
+                          'userName': name,
+                          'id': _auth.currentUser!.uid,
+                          'postId': postId,
+                          'userNumber': phoneNo,
+                          'itemPrice': itemPrice,
+                          'itemModel': itemModel,
+                          'itemWeight': itemWeight,
+                          'description': description,
+                          'urlImage1': urlslist[0].toString(),
+                          'urlImage2': urlslist[1].toString(),
+                          'urlImage3': urlslist[2].toString(),
+                          'urlImage4': urlslist[3].toString(),
+                          'urlImage5': urlslist[4].toString(),
+                          'imgPro': userImageUrl,
+                        }).then((value) {
+                          Navigator.pop(context); // Close dialog
+                          // Optionally, you can navigate to another screen or show a success message
+                        }).catchError((error) {
+                          print("Failed to upload product: $error");
+                          // Handle the error (e.g., show an error message)
                         });
-                        uploadFile().whenComplete(()
-                        {
-
-                          FirebaseFirestore.instance.
-                          collection('products')
-                              .doc(postId).set({
-                            'userName': name,
-                            'id': _auth.currentUser!.uid,
-                            'postId': postId,
-                            'userNumber': phoneNo,
-                            'itemPrice': itemPrice,
-                            'itemModel': itemModel,
-                            'itemWeight': itemWeight,
-                            'description': description,
-                            'urlImage1': urlslist[0].toString(),
-                            'urlImage2': urlslist[1].toString(),
-                            'urlImage3': urlslist[2].toString(),
-                            'urlImage4': urlslist[3].toString(),
-                            'urlImage5': urlslist[4].toString(),
-                            'imgPro': userImageUrl,
-
-
-                          });
-
-                        });
-
-                      },
-                      child: Text(
-                        'Upload',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      )),
-                )
+                      });
+                    },
+                    child: Text(
+                      'Upload',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -275,7 +252,8 @@ class _UploadAdScreenState extends State<UploadAdScreen> {
               padding: const EdgeInsets.all(4),
               child: GridView.builder(
                 itemCount: _image.length + 1,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate:
+                const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
                 ),
                 itemBuilder: (context, index) {
@@ -283,10 +261,11 @@ class _UploadAdScreenState extends State<UploadAdScreen> {
                       ? Center(
                     child: IconButton(
                       icon: const Icon(Icons.add),
-                      onPressed: ()
-                      {
-                        !uploading ? chooseImage() : null;
-                        // Add functionality for adding images
+                      onPressed: () {
+                        !uploading
+                            ? chooseImage(ImageSource.gallery)
+                            : null;
+                        // Add functionality for adding images from gallery
                       },
                     ),
                   )
@@ -316,8 +295,9 @@ class _UploadAdScreenState extends State<UploadAdScreen> {
                   ),
                   CircularProgressIndicator(
                     value: val,
-                    valueColor:
-                    const AlwaysStoppedAnimation<Color>(Colors.green),
+                    valueColor: const AlwaysStoppedAnimation<Color>(
+                      Colors.green,
+                    ),
                   ),
                 ],
               ),
@@ -328,4 +308,5 @@ class _UploadAdScreenState extends State<UploadAdScreen> {
       ),
     );
   }
+
 }

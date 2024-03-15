@@ -16,7 +16,7 @@ class _ForgetBodyState extends State<ForgetBody> {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  final TextEditingController _forgetPassTextController = TextEditingController(text: '')
+  final TextEditingController _forgetPassTextController = TextEditingController(text: '');
 
   void _forgetPassSubmitForm() async
   {
@@ -25,7 +25,7 @@ class _ForgetBodyState extends State<ForgetBody> {
       await _auth.sendPasswordResetEmail(
         email: _forgetPassTextController.text,
       );
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
     }catch(error)
     {
       ErrorAlertDialog(message: error.toString(),);
@@ -41,9 +41,9 @@ class _ForgetBodyState extends State<ForgetBody> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 40),
             child: ListView(
-              children: const [
+              children:  [
                 SizedBox(height: size.height * 0.2,),
-                Text(
+                const Text(
                   'Forget Password',
                   style: TextStyle(
                     color: Colors.black,
@@ -52,8 +52,8 @@ class _ForgetBodyState extends State<ForgetBody> {
                     fontFamily: 'Bebas',
                   ),
                 ),
-                SizedBox(height: 10,),
-                Text(
+                const SizedBox(height: 10,),
+                const Text(
                   'Email Address',
                   style: TextStyle(
                     color: Colors.black,
@@ -62,10 +62,10 @@ class _ForgetBodyState extends State<ForgetBody> {
                     fontStyle: FontStyle.italic,
                   ),
                 ),
-                SizedBox(height: 20,),
+                const SizedBox(height: 20,),
                 TextField(
                     controller: _forgetPassTextController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                     filled: true,
                     fillColor: Colors.black38,
                     enabledBorder: UnderlineInputBorder(
@@ -78,7 +78,7 @@ class _ForgetBodyState extends State<ForgetBody> {
                   ),
 
                 ),
-                SizedBox(height: 60,),
+                const SizedBox(height: 60,),
                 MaterialButton(
                   onPressed: ()
                   {
@@ -89,7 +89,7 @@ class _ForgetBodyState extends State<ForgetBody> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
-                  child: Padding(
+                  child: const Padding(
                     padding: EdgeInsets.symmetric(vertical: 14),
                     child: Text(
                       'Reset password',
