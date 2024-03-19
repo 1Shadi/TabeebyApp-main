@@ -7,7 +7,8 @@ import 'package:tabeeby_app/ProfileScreen/profile_screen.dart';
 import 'package:tabeeby_app/SearchProduct/search_product.dart';
 import 'package:tabeeby_app/UploadAdScreen/upload_ad_screen.dart';
 import 'package:tabeeby_app/WelcomeScreen/welcome_screen.dart';
-import 'package:tabeeby_app/Widgets/global_var.dart'; // Import the WelcomeScreen
+import 'package:tabeeby_app/Widgets/global_var.dart';
+import 'package:tabeeby_app/Widgets/listview.dart'; // Import the WelcomeScreen
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -81,7 +82,9 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => ProfileScreen()),
+                  MaterialPageRoute(builder: (context) => ProfileScreen(
+                    sellerId: uid,
+                  )),
                 );
               },
               child: const Padding(
@@ -136,6 +139,67 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
+        ),
+        body: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('items')
+              .orderBy('time', descending: true)
+              .snapshots(),
+          builder: (context, AsyncSnapshot snapshot)
+          {
+            if(snapshot.connectionState == ConnectionState.waiting)
+              {
+                return const Center(child: CircularProgressIndicator(),);
+              }
+            else if(snapshot.connectionState == ConnectionState.active)
+              {
+                if(snapsho.data!.docs.isNotEmpty)
+                  {
+                    return ListView.builder(
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (BuildContext context, int index)
+                      {
+                        return ListViewWidget(
+                        docId: snapshot.data!.docs[index].id,
+                            itemColor: snapshot.data!.docs[index]['itemColor'],
+                            img1: snapshot.data!.docs[index]['urlImage1'],
+                            img2:snapshot.data!.docs[index]['urlImage2'],
+                            img3: snapshot.data!.docs[index]['urlImage3'],
+                            img4:snapshot.data!.docs[index]['urlImage4'],
+                            img5: snapshot.data!.docs[index]['urlImage5'],
+                            userImg: snapshot.data!.docs[index]['imgPro'],
+                            name: snapshot.data!.docs[index]['userName'],
+                            date: snapshot.data!.docs[index]['time'].todate(),
+                        userId: snapshot.data!.docs[index]['id'],
+                        itemModel: snapshot.data!.docs[index]['itemModel'],
+                        postId: snapshot.data!.docs[index]['postId'],
+                        itemPrice: snapshot.data!.docs[index]['itemPrice'],
+                        description: snapshot.data!.docs[index]['description'],
+                        lat: snapshot.data!.docs[index]['lat'],
+                        lng: snapshot.data!.docs[index]['lng'],
+                      address: snapshot.data!.docs[index]['address'],
+                      userNumber: snapshot.data!.docs[index]['userNumber'],
+
+
+
+                      },
+                    );
+                  }
+                else
+                  {
+                    return const Center(
+                      child: Text('There is no tasks'),
+                    );
+                  }
+              }
+            return const Center(
+              child: const Text(
+                'Something went wrong',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+
+              ),
+            )
+          },
         ),
         floatingActionButton: FloatingActionButton(
           tooltip: 'Add Post',

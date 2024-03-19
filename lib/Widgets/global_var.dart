@@ -9,3 +9,5 @@ String getUserName = '';
 Position? position;
 List<Placemark>? placemarks;
 String completeAddress = '';
+String adUserImageUrl = '';
+String adUserName = '';
