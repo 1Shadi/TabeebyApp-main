@@ -1,17 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:tabeeby_app/HomeScreen/home_screen.dart';
 
-import '../Widgets/listview.dart';
+import '../core/Widgets/listview.dart';
+import '../features/HomeScreen/home_screen.dart';
 
 class SearchProduct extends StatefulWidget {
+  const SearchProduct({super.key});
+
   @override
   State<SearchProduct> createState() => _SearchProductState();
 }
 
 class _SearchProductState extends State<SearchProduct> {
 
-  final TextEditingController _searchQueryController = TextEditingController()
+  final TextEditingController _searchQueryController = TextEditingController();
 String searchQuery = '';
   bool _isSearching = false;
 
@@ -26,7 +28,7 @@ String searchQuery = '';
         hintStyle: TextStyle(color: Colors.white, fontSize: 16.0),
       ),
       onChanged: (query) => updateSearchQuery(query),
-    )
+    );
 
 }
 
@@ -45,10 +47,10 @@ List<Widget> _buildActions()
       return <Widget>
       [
         IconButton(
-          icon: Icon(Icons.clear),
+          icon: const Icon(Icons.clear),
           onPressed: ()
           {
-            if(_searchQueryController == null || _searchQueryController.text.isEmpty)
+            if(_searchQueryController.text.isEmpty)
               {
                 Navigator.pop(context);
                 return;
@@ -61,10 +63,10 @@ List<Widget> _buildActions()
   return <Widget>
   [
     IconButton(
-      icon: Icon(Icons.search),
+      icon: const Icon(Icons.search),
       onPressed: _startSearch,
     ),
-  ]
+  ];
 }
 
 _clearSearchQuery()
@@ -77,7 +79,7 @@ _clearSearchQuery()
 
 _startSearch()
 {
-  ModelRoute.of(context)!.addLocalHistoryEntry(LocalHistoryEntry(onRemove: _stopSearching));
+  ModalRoute.of(context)!.addLocalHistoryEntry(LocalHistoryEntry(onRemove: _stopSearching));
 
 }
 
@@ -91,19 +93,19 @@ _stopSearching()
 
 _buildTitle(BuildContext context)
 {
-  return Text('Search Product');
+  return const Text('Search Product');
 }
 
 _buildBackButton()
 {
   return IconButton(
-      icon: Icon(Icons.arrow_back, color: Colors.white,),
-  onPressed: (),
+      icon: const Icon(Icons.arrow_back, color: Colors.white,),
+  onPressed: ()
   {
     Navigator.pushReplacement(context,
   MaterialPageRoute(builder: (context) => HomeScreen()));
-},
-};
+});
+}
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +126,7 @@ _buildBackButton()
     child: Scaffold(
     backgroundColor: Colors.transparent,
     appBar: AppBar(
-    leading: _isSearching ? BackButton() : _buildBackButton(),
+    leading: _isSearching ? const BackButton() : _buildBackButton(),
     title: _isSearching ? _buildSearchField() : _buildTitle(context),
     actions: _buildActions(),
     flexibleSpace: Container(
@@ -142,7 +144,7 @@ _buildBackButton()
     ),
 
       ),
-    )
+    ),
     body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
     stream: FirebaseFirestore.instance
     .collection('items')
@@ -182,7 +184,7 @@ _buildBackButton()
     lat: snapshot.data!.docs[index]['lat'],
     lng: snapshot.data!.docs[index]['lng'],
     address: snapshot.data!.docs[index]['address'],
-    userNumber: snapshot.data!.docs[index]['userNumber'],
+    userNumber: snapshot.data!.docs[index]['userNumber']);
 
 
 
@@ -197,13 +199,13 @@ _buildBackButton()
     }
     }
     return const Center(
-    child: const Text(
+    child: Text(
     'Something went wrong',
     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
 
     ),
-    )
-    },
     );
+    },
+    ),),);
   }
 }
