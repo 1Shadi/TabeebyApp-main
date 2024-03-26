@@ -9,6 +9,7 @@ import '../../ProfileScreen/profile_screen.dart';
 import '../../UploadAdScreen/upload_ad_screen.dart';
 import '../../WelcomeScreen/welcome_screen.dart';
 import '../manager/home_screen_provider.dart';
+
 class HomeScreenBody extends StatefulWidget {
   final HomeScreenProvider provider;
 
@@ -111,51 +112,50 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
         ),
         body: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
-              .collection('products') // Use the 'products' collection instead of 'items'
-              .where('id', isEqualTo: _auth.currentUser!.uid) // Filter by user ID
-              .orderBy('time', descending: true)
+              .collection('products')
+              .orderBy('products', descending: true)
               .snapshots(),
-          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
-              return ListView.builder(
-                itemCount: snapshot.data!.docs.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final document = snapshot.data!.docs[index];
-                  return ListViewWidget(
-                    docId: document.id,
-                    itemColor: document['itemColor'],
-                    img1: document['urlImage1'],
-                    img2: document['urlImage2'],
-                    img3: document['urlImage3'],
-                    img4: document['urlImage4'],
-                    img5: document['urlImage5'],
-                    userImg: document['imgPro'],
-                    name: document['userName'],
-                    date: document['time'].toDate(),
-                    userId: document['id'],
-                    itemModel: document['itemModel'],
-                    postId: document['postId'],
-                    itemPrice: document['itemPrice'],
-                    description: document['description'],
-                    lat: document['lat'],
-                    lng: document['lng'],
-                    address: document['address'],
-                    userNumber: document['userNumber'],
-                  );
-                },
-              );
-            } else {
-              return const Center(
-                child: Text('There are no tasks'),
-              );
+              return const CircularProgressIndicator();
+            } else if (snapshot.connectionState == ConnectionState.active) {
+              if (snapshot.data!.docs.isNotEmpty) {
+                return ListView.builder(
+                  itemCount: snapshot.data!.docs.length,
+                  itemBuilder: (context, index) {
+                    return ListViewWidget(
+                        docId: snapshot.data!.docs[index].id,
+                        itemColor: snapshot.data!.docs[index]['itemColor'],
+                        img1: snapshot.data!.docs[index]['urlImage1'],
+                        img2: snapshot.data!.docs[index]['urlImage2'],
+                        img3: snapshot.data!.docs[index]['urlImage3'],
+                        img4: snapshot.data!.docs[index]['urlImage4'],
+                        img5: snapshot.data!.docs[index]['urlImage5'],
+                        userImg: snapshot.data!.docs[index]['imgPro'],
+                        name: snapshot.data!.docs[index]['userName'],
+                        date: snapshot.data!.docs[index]['time'].toDate(),
+                        userId: snapshot.data!.docs[index]['id'],
+                        itemModel: snapshot.data!.docs[index]['itemModel'],
+                        postId: snapshot.data!.docs[index]['postId'],
+                        itemPrice: snapshot.data!.docs[index]['itemPrice'],
+                        description: snapshot.data!.docs[index]['description'],
+                        lat: snapshot.data!.docs[index]['lat'],
+                        lng: snapshot.data!.docs[index]['lng'],
+                        address: snapshot.data!.docs[index]['address'],
+                        userNumber: snapshot.data!.docs[index]['userNumber']);
+                  },
+                );
+              } else {
+                return const Center(
+                  child: Text('there is no item'),
+                );
+              }
             }
+            return const Center(
+              child: Text('something went wrong'),
+            );
           },
         ),
-
         floatingActionButton: FloatingActionButton(
           tooltip: 'Add Post',
           backgroundColor: Colors.black54,
